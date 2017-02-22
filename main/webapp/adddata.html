@@ -1,0 +1,70 @@
+<html>
+<title>Ad campaign</title>
+<h3>New ad campaign</h3>
+<head>
+<script type="text/javascript" src="./jquery/jquery-1.11.2.min.js"></script>
+<script type="text/javascript">
+
+
+sendAsJSON = function() {
+	var defaultUrl = "http://localhost:8080/ad/advert";
+	var partnerId = document.getElementById("partner_id");
+	var adDuration = document.getElementById("duration");
+	var adContent = document.getElementById("content");
+	adContent.value = adContent.value.replace(/(\r\n|\n|\r)/gm,"");
+	var string = {partner_id : partnerId.value, duration : adDuration.value, ad_content : adContent.value};
+	$.ajax({
+        url: defaultUrl,
+        type: "POST",
+        data: JSON.stringify(string),
+        dataType: "text",
+        success: function (result) {
+            window.alert("Added");
+			location.href = "./index.html";
+        },
+		error: function (xhr, options, error) {
+			 window.alert("Some error " + xhr + " " + error);
+			location.href = "./index.html";
+		}
+    });
+}
+</script>
+</head>
+<body>
+<table border="0">
+<tr>
+<td>
+New partner id, e.g. 1, for first
+</td>
+<td>
+<input type="text" name="partner_id" id="partner_id" size="1" />
+</td>
+</tr>
+<tr>
+<td>
+Duration of advertisement, e.g. 1 = 1 day
+</td>
+<td>
+<input type="text" name="duration" id="duration" size="1" />
+</td>
+</tr>
+<tr>
+<td>
+Advertising content
+</td>
+</tr>
+<tr>
+<td>
+<textarea name="ad_content" id="content" cols="40" rows="5">
+Enter text here
+</textarea>
+</td>
+</tr>
+<tr>
+<td>
+<button type="button" onclick="sendAsJSON()">Send data</button>
+</td>
+</tr>
+</table>
+</body>
+</html> 
