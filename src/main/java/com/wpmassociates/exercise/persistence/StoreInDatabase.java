@@ -1,6 +1,5 @@
 package com.wpmassociates.exercise.persistence;
 
-
 import java.util.Properties;
 import java.sql.*;
 import org.json.JSONObject;
@@ -23,7 +22,7 @@ public class StoreInDatabase implements StoreData {
 	private JSONMapStorageObject adObject = null;
 	private String adContent = null;
 	
-	public void init(Properties properties) {
+	public StoreInDatabase(Properties properties) {
 		try {
 			Class.forName(properties.getProperty("driverName"));
 			connection = DriverManager.getConnection(properties.getProperty("mysqlUrl") + "/" + properties.getProperty("databaseName"), properties.getProperty("dbUsername"), properties.getProperty("dbPassword"));
@@ -50,11 +49,6 @@ public class StoreInDatabase implements StoreData {
             if (preparedStatement != null) {
 				try {
 					preparedStatement.close();                      
-				} catch (SQLException exception) {}
-			} 
-			if (connection != null) {
-				try {
-					connection.close();                      
 				} catch (SQLException exception) {}
 			} 
         } 
@@ -88,16 +82,10 @@ public class StoreInDatabase implements StoreData {
 					preparedStatement.close();                      
 				} catch (SQLException exception) {}
 			} 
-			if (connection != null) {
-				try {
-					connection.close();                      
-				} catch (SQLException exception) {}
-			} 
-			
-        } 
+	    } 
 		return adObject;
 	}		
-	
+
 	public boolean deleteData(int partnerId) {
 		//to be implemented
 		return true;

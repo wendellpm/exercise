@@ -7,29 +7,24 @@
 
 
 sendAsJSON = function() {
-	var defaultUrl = "http://localhost:8080/ad/advert";
+	window.alert("in function");
+	var defaultUrl = "/ad/advert";
 	var partnerId = document.getElementById("partner_id");
 	var adDuration = document.getElementById("duration");
 	var adContent = document.getElementById("content");
 	adContent.value = adContent.value.replace(/(\r\n|\n|\r)/gm,"");
 	var string = {partner_id : partnerId.value, duration : adDuration.value, ad_content : adContent.value};
+	window.alert("Sent " + JSON.stringify(string));
 	$.ajax({
         url: defaultUrl,
         type: "POST",
         data: JSON.stringify(string),
-        dataType: "text"
+        dataType: "text",
+        success: function (result) {
+            window.alert("Added " + result);
+			location.href = "./index.html";
 		}
-		})
-        .done(
-			function (result) {
-            window.alert("Added");
-			location.href = "./index.html";
-        })
-		.fail(
-			function (xhr) {
-			window.alert("Text returned " + xhr.responseText);
-			location.href = "./index.html";
-		});
+	});
 }
 </script>
 </head>

@@ -2,7 +2,6 @@ package com.wpmassociates.exercise.persistence;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Properties;
 
 import com.wpmassociates.exercise.domain.*;
 
@@ -10,7 +9,7 @@ public class StoreDataMap implements StoreData {
 
 	private Map<Integer, JSONMapStorageObject> storageMap;
 
-	public void init(Properties properties) {
+	public StoreDataMap() {
 		if (storageMap == null) 
 			storageMap = new HashMap<Integer, JSONMapStorageObject>();
 	}
@@ -28,6 +27,4 @@ public class StoreDataMap implements StoreData {
 		storageMap.remove(partnerId);
 		return (storageMap.containsKey(partnerId));
 	}
-
-
  }
