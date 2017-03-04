@@ -90,4 +90,24 @@ public class StoreInDatabase implements StoreData {
 		//to be implemented
 		return true;
 	}
+	
+	public boolean checkForPartnerId(int partnerId) {
+		try {
+		queryStatement = "select partner_id from json where partner_id = ?";
+        preparedStatement = connection.prepareStatement(queryStatement);
+		preparedStatement.setInt(1, partnerId);
+		resultSet = preparedStatement.executeQuery();
+		} catch (Exception exception){
+			exception.getMessage();
+		} finally {                                                       
+            if (preparedStatement != null) {
+				try {
+					preparedStatement.close();                      
+				} catch (SQLException exception) {}
+			} 
+	    } 
+		return (resultSet != null);
+	}
+	
+	
  }

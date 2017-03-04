@@ -13,7 +13,7 @@ import com.wpmassociates.exercise.constants.*;
 public class AdServlet extends HttpServlet {
 
 	private PrintWriter printWriter;
-	String jsonString = null;
+	private String responseString = null;
 	
 	private AdService service = null;
 
@@ -25,9 +25,9 @@ public class AdServlet extends HttpServlet {
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		printWriter = response.getWriter();
 		String partnerId = request.getParameter(Constants.PARTNER_ID);
-		jsonString = service.retrieveData(Integer.parseInt(partnerId));
+		responseString = service.retrieveData(Integer.parseInt(partnerId));
 		response.setContentType("application/json,charset=UTF-8");
-		printWriter.write(jsonString);
+		printWriter.write(responseString);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -36,7 +36,10 @@ public class AdServlet extends HttpServlet {
 		BufferedReader reader = request.getReader();
 		boolean success = service.processData(reader);
 		response.setContentType("text/plain,charset=UTF-8");
-		if (success) printWriter.write("success");
+		if (success) 
+			printWriter.write("success");
+		else 
+			printWriter.write("partner id already exists");
 	}
 	
  }

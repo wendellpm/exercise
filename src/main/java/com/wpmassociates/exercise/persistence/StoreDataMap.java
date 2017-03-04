@@ -27,4 +27,9 @@ public class StoreDataMap implements StoreData {
 		storageMap.remove(partnerId);
 		return (storageMap.containsKey(partnerId));
 	}
+	
+	public boolean checkForPartnerId(int partnerId) {
+		return storageMap.containsKey(partnerId);
+	}
+	
  }

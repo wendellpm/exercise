@@ -42,6 +42,9 @@ public class AdService {
 		
 		JSONMapStorageObject adObject = null;
 		adObject = persist.retrieveData(partnerId);
+		
+		if (adObject == null)
+			return Constants.NO_RECORD + " " + partnerId;
 		Date date = adObject.getEntryTime();
 		long duration = adObject.getDuration();
 		
@@ -68,6 +71,10 @@ public class AdService {
 		String adContent = jsonObject.getString("ad_content");
 		long milliseconds = duration * Constants.DAYINMILLISECONDS;
 		JSONMapStorageObject storageObject = new JSONMapStorageObject(new Date(), jsonString, milliseconds, partnerId, adContent);	
+		
+		boolean exists = persist.checkForPartnerId(partnerId);
+		if (exists) return false;
+		else
 		return persist.storeData(partnerId, storageObject);
 	}
 		
