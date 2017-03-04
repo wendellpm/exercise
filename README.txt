@@ -31,4 +31,5 @@ dbUsername=<username>		enter username that works on local server
 dbPassword=<password>		enter password that works on local server
 mysqlUrl=jdbc:mysql://localhost:3306	leave as is, default port for mysql
 driverName=com.mysql.jdbc.Driver		leave as is
+
  
