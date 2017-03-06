@@ -3,6 +3,7 @@ package com.wpmassociates.exercise.servlets;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServlet;
+import javax.servlet.ServletContext;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,9 +18,13 @@ public class AdServlet extends HttpServlet {
 	
 	private AdService service = null;
 
+	private ServletContext context = null;
+	
 	@Override
 	public void init() {
-		service = new AdService();		
+		context = getServletConfig().getServletContext();
+		service = new AdService(context);
+		context.log("Class name " + this.getClass().getName() + " initialized.");	
 	}
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -32,14 +37,18 @@ public class AdServlet extends HttpServlet {
 	
 	@SuppressWarnings("unchecked")
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String result = null;
 		printWriter = response.getWriter();
 		BufferedReader reader = request.getReader();
-		boolean success = service.processData(reader);
 		response.setContentType("text/plain,charset=UTF-8");
-		if (success) 
-			printWriter.write("success");
-		else 
+		result = service.processData(reader);
+		context.log("Result is " + result);
+		if (result.equals("exists")) 
 			printWriter.write("partner id already exists");
+		else if (result.equals("added"))
+			printWriter.write("partner added");
+		else if (result.equals("problem"))
+			printWriter.write("partner not added");
 	}
 	
  }

@@ -2,6 +2,7 @@ package com.wpmassociates.exercise.persistence;
 
 import java.util.Map;
 import java.util.HashMap;
+import javax.servlet.ServletContext;
 
 import com.wpmassociates.exercise.domain.*;
 
@@ -28,7 +29,7 @@ public class StoreDataMap implements StoreData {
 		return (storageMap.containsKey(partnerId));
 	}
 	
-	public boolean checkForPartnerId(int partnerId) {
+	public boolean checkForPartnerId(int partnerId, ServletContext context) {
 		return storageMap.containsKey(partnerId);
 	}
 	

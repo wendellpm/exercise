@@ -14,21 +14,21 @@ The database, named "json", needs to be created first from the mysql prompt as f
 
 mysql>create database json;
 
-To use the MySQL database use the enclosed json.sql file from command line. This creates table, also named "json" without data, the username and password values must be those that work on the local mysql server.
+To use the MySQL database use the enclosed json.sql file from command line. This creates a table, also named "json", in the data base "json", without data. The username and password values must be those that work on the local mysql server.
 
 $ mysql -u <username> -p <password> json < json.sql
 
 MySQL may require the <password> value to be set separately, thus:
 
 $ mysql -u <username> -p json < json.sql <press enter key>
-password:<password> <press enter key>
+enter password:<password> <press enter key>
 
 Then set the key/values in the default.properties, as follows, before running the application server:
 
 databaseName=json	leave as is
 useMap=no			value must be "no"
-dbUsername=<username>		enter username that works on local server
-dbPassword=<password>		enter password that works on local server
+dbUsername=<username>		enter username value that works on local server
+dbPassword=<password>		enter password value that works on local server
 mysqlUrl=jdbc:mysql://localhost:3306	leave as is, default port for mysql
 driverName=com.mysql.jdbc.Driver		leave as is
 

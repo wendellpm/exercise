@@ -3,12 +3,10 @@ package com.wpmassociates.exercise.persistence;
 import java.util.Properties;
 import java.sql.*;
 import org.json.JSONObject;
-import org.json.JSONException;
-import java.io.IOException;
+import javax.servlet.ServletContext;
 
 import com.wpmassociates.exercise.domain.*;
 import com.wpmassociates.exercise.constants.*;
-import com.wpmassociates.exercise.service.*;
 
 public class StoreInDatabase implements StoreData { 
 
@@ -20,7 +18,7 @@ public class StoreInDatabase implements StoreData {
 	private Timestamp timestamp = null;
 	private ResultSet resultSet = null;
 	private JSONMapStorageObject adObject = null;
-	private String adContent = null;
+
 	
 	public StoreInDatabase(Properties properties) {
 		try {
@@ -32,7 +30,7 @@ public class StoreInDatabase implements StoreData {
 	}
 
 	public boolean storeData(int partnerId, JSONMapStorageObject storageObject) {
-		boolean result = false;
+		int added = 0;
         try { 
 			String jsonString = storageObject.getJsonString();
 			long entryTime = storageObject.getEntryTime().getTime();
@@ -42,7 +40,7 @@ public class StoreInDatabase implements StoreData {
 			preparedStatement.setInt(1, partnerId);
             preparedStatement.setString(2, jsonString);
 			preparedStatement.setTimestamp(3, timestamp);
-			result = preparedStatement.execute();
+			added = preparedStatement.executeUpdate();
         } catch (Exception exception){
 			exception.getMessage();
 		} finally {                                                       
@@ -52,7 +50,7 @@ public class StoreInDatabase implements StoreData {
 				} catch (SQLException exception) {}
 			} 
         } 
-		return result;
+		return (added == 1);
 	}	
 		
 	public JSONMapStorageObject retrieveData(int partnerId) {
@@ -91,12 +89,19 @@ public class StoreInDatabase implements StoreData {
 		return true;
 	}
 	
-	public boolean checkForPartnerId(int partnerId) {
+	public boolean checkForPartnerId(int partnerId, ServletContext context) {
+		boolean exists = false;
 		try {
 		queryStatement = "select partner_id from json where partner_id = ?";
         preparedStatement = connection.prepareStatement(queryStatement);
 		preparedStatement.setInt(1, partnerId);
 		resultSet = preparedStatement.executeQuery();
+		if (resultSet.first()) {
+			context.log("Result set " + resultSet.getInt(1));
+			exists = true;
+		}
+		else 
+			context.log("No result");
 		} catch (Exception exception){
 			exception.getMessage();
 		} finally {                                                       
@@ -106,7 +111,7 @@ public class StoreInDatabase implements StoreData {
 				} catch (SQLException exception) {}
 			} 
 	    } 
-		return (resultSet != null);
+	   	return exists;
 	}
 	
 	

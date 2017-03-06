@@ -1,14 +1,13 @@
 package com.wpmassociates.exercise.service;
 
 import java.io.BufferedReader;
-import java.io.Reader;
 import java.io.IOException;
 import org.json.JSONObject;
-import org.json.JSONException;
 
 import java.util.Properties;
-import java.util.Set;
 import java.io.InputStream;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 
 import com.wpmassociates.exercise.persistence.*;
 import com.wpmassociates.exercise.domain.*;
@@ -22,8 +21,10 @@ public class AdService {
 	private StoreData persist;
 	private Properties properties;
 	private String jsonString = null;
+	private ServletContext context = null;
 
-	public AdService() {
+	public AdService(ServletContext context) {
+		this.context = context;
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		InputStream input = classLoader.getResourceAsStream("default.properties");
 		properties = new Properties();
@@ -41,10 +42,11 @@ public class AdService {
 	public String retrieveData(int partnerId) {
 		
 		JSONMapStorageObject adObject = null;
-		adObject = persist.retrieveData(partnerId);
-		
-		if (adObject == null)
+		this.context.log("Partner id exists " + checkId(partnerId));
+		if (!checkId(partnerId))
 			return Constants.NO_RECORD + " " + partnerId;
+		
+		adObject = persist.retrieveData(partnerId);
 		Date date = adObject.getEntryTime();
 		long duration = adObject.getDuration();
 		
@@ -55,7 +57,7 @@ public class AdService {
 		return jsonString;
 	}
 	
-	public boolean processData(BufferedReader reader) {
+	public String processData(BufferedReader reader) {
 		
 		StringBuffer buffer = new StringBuffer();
 		String line = null;
@@ -72,10 +74,16 @@ public class AdService {
 		long milliseconds = duration * Constants.DAYINMILLISECONDS;
 		JSONMapStorageObject storageObject = new JSONMapStorageObject(new Date(), jsonString, milliseconds, partnerId, adContent);	
 		
-		boolean exists = persist.checkForPartnerId(partnerId);
-		if (exists) return false;
-		else
-		return persist.storeData(partnerId, storageObject);
+		if (checkId(partnerId) == true)
+			return "exists";
+		if (persist.storeData(partnerId, storageObject)) {
+			this.context.log("Partner id added");
+			return "added";
+		} else 
+			return "problem";
 	}
 		
+	private boolean checkId(int partnerId) {
+		return persist.checkForPartnerId(partnerId, this.context);
+	}
  }
