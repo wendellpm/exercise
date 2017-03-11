@@ -7,7 +7,6 @@ import org.json.JSONObject;
 import java.util.Properties;
 import java.io.InputStream;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
 import com.wpmassociates.exercise.persistence.*;
 import com.wpmassociates.exercise.domain.*;

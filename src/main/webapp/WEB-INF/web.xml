@@ -3,22 +3,7 @@
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
  <description>Manages advertising content for advertising partners. Partners are identified by an integer. Data are stored for the partner includes date of start of ad campaign, duration in days of campaign and the content for the ad campaign.</description>
  <display-name>Advertising content application</display-name>
- <filter>
-  <filter-name>getfilter</filter-name>
-  <filter-class>com.wpmassociates.exercise.filters.GetFilter</filter-class>
- </filter>
- <filter>
-  <filter-name>nextfilter</filter-name>
-  <filter-class>com.wpmassociates.exercise.filters.NextFilter</filter-class>
- </filter>
- <filter-mapping>
-  <filter-name>nextfilter</filter-name>
-  <url-pattern>/*</url-pattern>
- </filter-mapping>
- <filter-mapping>
-  <filter-name>getfilter</filter-name>
-  <url-pattern>/*</url-pattern>
- </filter-mapping>
+
  <servlet>
   <servlet-name>adservlet</servlet-name>
   <servlet-class>com.wpmassociates.exercise.servlets.AdServlet</servlet-class>
