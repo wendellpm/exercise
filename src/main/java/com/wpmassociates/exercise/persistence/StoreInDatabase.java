@@ -71,7 +71,7 @@ public class StoreInDatabase implements StoreData {
 			JSONObject jsonObject = new JSONObject(jsonString);
 			long duration = Integer.parseInt((String)jsonObject.get("duration")) * Constants.DAYINMILLISECONDS;
 			String adContent = (String)jsonObject.get("ad_content");
-			adObject = new JSONMapStorageObject(new Date(entryTime), jsonString, duration, partnerId, adContent);
+			adObject = new JSONMapStorageObject(new Date(entryTime), jsonString, partnerId, duration, adContent);
         } catch (Exception exception){
 			exception.getMessage();
 		} finally {                                                       

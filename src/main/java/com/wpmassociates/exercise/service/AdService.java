@@ -72,7 +72,7 @@ public class AdService {
 		int duration = Integer.parseInt(jsonObject.getString("duration"));
 		String adContent = jsonObject.getString("ad_content");
 		long milliseconds = duration * Constants.DAYINMILLISECONDS;
-		JSONMapStorageObject storageObject = new JSONMapStorageObject(new Date(), jsonString, milliseconds, partnerId, adContent);	
+		JSONMapStorageObject storageObject = new JSONMapStorageObject(new Date(), jsonString, partnerId, milliseconds,  adContent);	
 		
 		if (checkId(partnerId) == true)
 			return "exists";

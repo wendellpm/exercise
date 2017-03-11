@@ -7,6 +7,7 @@ import javax.servlet.ServletContext;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Enumeration;
 
 import com.wpmassociates.exercise.service.*;
 import com.wpmassociates.exercise.constants.*;
@@ -24,15 +25,29 @@ public class AdServlet extends HttpServlet {
 	public void init() {
 		context = getServletConfig().getServletContext();
 		service = new AdService(context);
-		context.log("Class name " + this.getClass().getName() + " initialized.");	
 	}
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		printWriter = response.getWriter();
-		String partnerId = request.getParameter(Constants.PARTNER_ID);
-		responseString = service.retrieveData(Integer.parseInt(partnerId));
+		String uri = request.getRequestURI();
+		String sentId = uri.substring(Constants.ID_LOCATION);
+		Enumeration<String> headerNames = request.getHeaderNames();
+      	String accumulator = "Headers\n";
+     	while(headerNames.hasMoreElements()) {
+       	  	String paramName = headerNames.nextElement();
+        	accumulator += "\t" + paramName + "\t";
+        	String paramValue = request.getHeader(paramName);
+        	accumulator += "\t" + paramValue + "\n";
+      	}
+		log(accumulator);
+		log("Partner id " + sentId);
+		int partnerInteger = 0;
+		if (sentId != null)
+			partnerInteger = Integer.parseInt(sentId);
+		responseString = service.retrieveData(Integer.parseInt(sentId));
 		response.setContentType("application/json,charset=UTF-8");
 		printWriter.write(responseString);
+		
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -42,7 +57,7 @@ public class AdServlet extends HttpServlet {
 		BufferedReader reader = request.getReader();
 		response.setContentType("text/plain,charset=UTF-8");
 		result = service.processData(reader);
-		context.log("Result is " + result);
+		log("Result is " + result);
 		if (result.equals("exists")) 
 			printWriter.write("partner id already exists");
 		else if (result.equals("added"))

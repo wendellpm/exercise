@@ -14,11 +14,11 @@ public class JSONMapStorageObject {
 		
 	public JSONMapStorageObject() {}
 	
-	public JSONMapStorageObject(Date entryTime, String jsonString, long duration, int partnerId, String adContent) {
+	public JSONMapStorageObject(Date entryTime, String jsonString, int partnerId, long duration, String adContent) {
 		this.entryTime = entryTime;
 		this.jsonString = jsonString;
-		this.duration = duration;
 		this.partnerId = partnerId;
+		this.duration = duration;
 		this.adContent = adContent;
 	}
 
