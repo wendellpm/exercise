@@ -3,84 +3,86 @@ package com.wpmassociates.exercise.persistence;
 import java.util.Properties;
 import java.sql.*;
 import org.json.JSONObject;
+import org.json.JSONException;
 import javax.servlet.ServletContext;
+import java.util.Date;
 
 import com.wpmassociates.exercise.domain.*;
 import com.wpmassociates.exercise.constants.*;
 
 public class StoreInDatabase implements StoreData { 
 
-	private Connection connection = null;            
+	private Connection connection = null; 
+	private Properties properties = null;
     private PreparedStatement preparedStatement = null;     
     private String insertStatement = null;
 	private String queryStatement = null;
-	private String deleteStatement = null;
+	private String testStatement = null;
 	private Timestamp timestamp = null;
 	private ResultSet resultSet = null;
 	private JSONMapStorageObject adObject = null;
+	private ServletContext context = null;
 
 	
-	public StoreInDatabase(Properties properties) {
-		try {
-			Class.forName(properties.getProperty("driverName"));
-			connection = DriverManager.getConnection(properties.getProperty("mysqlUrl") + "/" + properties.getProperty("databaseName"), properties.getProperty("dbUsername"), properties.getProperty("dbPassword"));
-		} catch (SQLException | ClassNotFoundException exception) {
-			exception.getMessage();
-		}
+	public StoreInDatabase(ServletContext context) {
+		this.context = context;		
 	}
 
+	public void setProperties(Properties properties) {
+		this.properties = properties;
+	}
+	
+	private Properties getProperties() {
+		return this.properties;
+	}
+	
+	private void setConnection(Connection connection) {
+		this.connection = getConnection();
+	}
+	
+	
+	private Connection getConnection() {
+		try {
+			properties = this.getProperties();
+			if (properties == null)
+				context.log("Properties null");
+			else 
+				context.log("Properties not null");
+			connection = DriverManager.getConnection(properties.getProperty("mysqlUrl") + "/" + properties.getProperty("databaseName"), properties.getProperty("dbUsername"), properties.getProperty("dbPassword"));
+		} catch (SQLException exception) {}
+		return connection;
+		}
+	
 	public boolean storeData(int partnerId, JSONMapStorageObject storageObject) {
-		int added = 0;
+		boolean added = false;
         try { 
 			String jsonString = storageObject.getJsonString();
 			long entryTime = storageObject.getEntryTime().getTime();
 			timestamp = new Timestamp(entryTime);
             insertStatement = "insert into json(partner_id, json_string, entry_date) values(?, ?, ?)"; 
-            preparedStatement = connection.prepareStatement(insertStatement);
+            preparedStatement = getConnection().prepareStatement(insertStatement);
 			preparedStatement.setInt(1, partnerId);
             preparedStatement.setString(2, jsonString);
 			preparedStatement.setTimestamp(3, timestamp);
-			added = preparedStatement.executeUpdate();
+			return preparedStatement.execute();
         } catch (Exception exception){
 			exception.getMessage();
-		} finally {                                                       
-            if (preparedStatement != null) {
-				try {
-					preparedStatement.close();                      
-				} catch (SQLException exception) {}
-			} 
-        } 
-		return (added == 1);
+        }
+		return false;
 	}	
 		
 	public JSONMapStorageObject retrieveData(int partnerId) {
 		String jsonString = null;
+		context.log("Partner id in retrieveData() " + partnerId);
         try { 
-            queryStatement = "select json_string, entry_date from json where partner_id = ?";  
-            preparedStatement = connection.prepareStatement(queryStatement);
-			preparedStatement.setInt(1, partnerId);
-			resultSet = preparedStatement.executeQuery();
-			if (resultSet == null)
-				throw new SQLException("ResultSet null");
-			resultSet.first();
-			jsonString = resultSet.getString("json_string");
-			timestamp = resultSet.getTimestamp("entry_date");
-			if (jsonString == null || timestamp == null)
-				throw new SQLException("Null values returned");
-			long entryTime = timestamp.getTime();
+			jsonString = "{\"partner_id\":\"10\", \"duration\":\"1\";\"ad_content\":\"This is the ad content\"}";
 			JSONObject jsonObject = new JSONObject(jsonString);
-			long duration = Integer.parseInt((String)jsonObject.get("duration")) * Constants.DAYINMILLISECONDS;
-			String adContent = (String)jsonObject.get("ad_content");
-			adObject = new JSONMapStorageObject(new Date(entryTime), jsonString, partnerId, duration, adContent);
-        } catch (Exception exception){
-			exception.getMessage();
-		} finally {                                                       
-            if (preparedStatement != null) {
-				try {
-					preparedStatement.close();                      
-				} catch (SQLException exception) {}
-			} 
-	    } 
+			long duration = Constants.DAYINMILLISECONDS;
+			String adContent = "This is the ad content";
+			adObject = new JSONMapStorageObject(new Date(), jsonString, partnerId, duration, adContent);
+        } catch (JSONException exception){
+				exception.getMessage();
+        }
 		return adObject;
 	}		
 
@@ -89,29 +91,25 @@ public class StoreInDatabase implements StoreData {
 		return true;
 	}
 	
-	public boolean checkForPartnerId(int partnerId, ServletContext context) {
-		boolean exists = false;
+	public boolean checkForPartnerId(int partnerId) {
+		int exists = 1;
+		context.log("In checkForPartnerId " + partnerId);
+		
 		try {
-		queryStatement = "select partner_id from json where partner_id = ?";
-        preparedStatement = connection.prepareStatement(queryStatement);
-		preparedStatement.setInt(1, partnerId);
-		resultSet = preparedStatement.executeQuery();
-		if (resultSet.first()) {
-			context.log("Result set " + resultSet.getInt(1));
-			exists = true;
-		}
-		else 
-			context.log("No result");
+			connection = DriverManager.getConnection(properties.getProperty("mysqlUrl") + "/" + properties.getProperty("databaseName"), properties.getProperty("dbUsername"), properties.getProperty("dbPassword"));
+			if (connection == null)
+				context.log("connection value null in checkForPartnerId()");
+			testStatement = "select partner_id from json where partner_id = ?";
+			preparedStatement = getConnection().prepareStatement(testStatement);
+        if (preparedStatement == null)
+			context.log("preparedStatement null in checkForPartnerId()");
+        preparedStatement.setInt(1, partnerId);
+		exists = preparedStatement.executeUpdate();
+		context.log("Exists is " + exists);
 		} catch (Exception exception){
 			exception.getMessage();
-		} finally {                                                       
-            if (preparedStatement != null) {
-				try {
-					preparedStatement.close();                      
-				} catch (SQLException exception) {}
-			} 
-	    } 
-	   	return exists;
+		} 
+	   	return true;
 	}
 	
 	

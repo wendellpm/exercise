@@ -11,6 +11,7 @@ import java.util.Enumeration;
 
 import com.wpmassociates.exercise.service.*;
 import com.wpmassociates.exercise.constants.*;
+import com.wpmassociates.exercise.domain.*;
 
 public class AdServlet extends HttpServlet {
 
@@ -24,10 +25,10 @@ public class AdServlet extends HttpServlet {
 	@Override
 	public void init() {
 		context = getServletConfig().getServletContext();
-		service = new AdService(context);
 	}
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		service = new AdService(context);
 		printWriter = response.getWriter();
 		String uri = request.getRequestURI();
 		String sentId = uri.substring(Constants.ID_LOCATION);
@@ -39,8 +40,8 @@ public class AdServlet extends HttpServlet {
         	String paramValue = request.getHeader(paramName);
         	accumulator += "\t" + paramValue + "\n";
       	}
-		log(accumulator);
-		log("Partner id " + sentId);
+		context.log(accumulator);
+		context.log("Partner id " + sentId);
 		int partnerInteger = 0;
 		if (sentId != null)
 			partnerInteger = Integer.parseInt(sentId);
@@ -52,18 +53,18 @@ public class AdServlet extends HttpServlet {
 	
 	@SuppressWarnings("unchecked")
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		String result = null;
+		service = new AdService(context);
+		PersistenceResult result = null;
 		printWriter = response.getWriter();
 		BufferedReader reader = request.getReader();
 		response.setContentType("text/plain,charset=UTF-8");
 		result = service.processData(reader);
-		log("Result is " + result);
-		if (result.equals("exists")) 
-			printWriter.write("partner id already exists");
-		else if (result.equals("added"))
-			printWriter.write("partner added");
-		else if (result.equals("problem"))
-			printWriter.write("partner not added");
+		if (result.getResult().equals("exists")) 
+			context.log(Constants.ALREADY_EXISTS + result.getPartnerId());
+		else if (result.getResult().equals("added"))
+			context.log(Constants.ADDED + result.getPartnerId());
+		else if (result.getResult().equals("problem"))
+			context.log(Constants.NOT_ADDED + result.getPartnerId());
 	}
 	
  }

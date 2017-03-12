@@ -3,6 +3,7 @@ package com.wpmassociates.exercise.service;
 import java.io.BufferedReader;
 import java.io.IOException;
 import org.json.JSONObject;
+import org.json.JSONException;
 
 import java.util.Properties;
 import java.io.InputStream;
@@ -33,19 +34,24 @@ public class AdService {
 		
 		String useMap = properties.getProperty("useMap");
 		if (useMap.equals("yes"))
-			persist = new StoreDataMap();
+			persist = StoreDataMap.getInstance(context);
 		else 
-			persist = new StoreInDatabase(properties);
+			persist = new StoreInDatabase(context);
 	}	
 	
 	public String retrieveData(int partnerId) {
-		
+		persist.setProperties(properties);
 		JSONMapStorageObject adObject = null;
-		this.context.log("Partner id exists " + checkId(partnerId));
-		if (!checkId(partnerId))
+		context.log("Partner id is " + partnerId);;
+		boolean exists = checkId(partnerId);
+		this.context.log("Partner id exists " + exists);
+		if (!exists)
 			return Constants.NO_RECORD + " " + partnerId;
 		
 		adObject = persist.retrieveData(partnerId);
+		if (adObject == null)
+			return "Add object is null";
+		
 		Date date = adObject.getEntryTime();
 		long duration = adObject.getDuration();
 		
@@ -56,8 +62,8 @@ public class AdService {
 		return jsonString;
 	}
 	
-	public String processData(BufferedReader reader) {
-		
+	public PersistenceResult processData(BufferedReader reader) {
+		persist.setProperties(properties);
 		StringBuffer buffer = new StringBuffer();
 		String line = null;
 		try {
@@ -65,24 +71,29 @@ public class AdService {
 				buffer.append(line);
 		} catch (Exception exception) {}
 		jsonString = buffer.toString();
-		
-		JSONObject jsonObject = new JSONObject(jsonString);
-		int partnerId = Integer.parseInt(jsonObject.getString("partner_id"));
-		int duration = Integer.parseInt(jsonObject.getString("duration"));
-		String adContent = jsonObject.getString("ad_content");
+		int duration = 0;
+		String adContent = null;
+		int partnerId = 0;
+		try {
+			JSONObject jsonObject = new JSONObject(jsonString);
+			partnerId = Integer.parseInt(jsonObject.getString("partner_id"));
+			duration = Integer.parseInt(jsonObject.getString("duration"));
+			adContent = jsonObject.getString("ad_content");
+		} catch (JSONException exception) {}
 		long milliseconds = duration * Constants.DAYINMILLISECONDS;
 		JSONMapStorageObject storageObject = new JSONMapStorageObject(new Date(), jsonString, partnerId, milliseconds,  adContent);	
 		
-		if (checkId(partnerId) == true)
-			return "exists";
-		if (persist.storeData(partnerId, storageObject)) {
-			this.context.log("Partner id added");
-			return "added";
-		} else 
-			return "problem";
+		if (checkId(partnerId))
+			return new PersistenceResult(partnerId, "exists");
+		else
+			if (persist.storeData(partnerId, storageObject))
+				return new PersistenceResult(partnerId, "added");
+			else 
+				return new PersistenceResult(partnerId, "problem");
 	}
 		
 	private boolean checkId(int partnerId) {
-		return persist.checkForPartnerId(partnerId, this.context);
+		persist.setProperties(properties);
+		return persist.checkForPartnerId(partnerId);
 	}
  }
