@@ -12,6 +12,7 @@ import java.util.Enumeration;
 import com.wpmassociates.exercise.service.*;
 import com.wpmassociates.exercise.constants.*;
 import com.wpmassociates.exercise.domain.*;
+import com.wpmassociates.exercise.validation.*;
 
 public class AdServlet extends HttpServlet {
 
@@ -32,6 +33,8 @@ public class AdServlet extends HttpServlet {
 		printWriter = response.getWriter();
 		String uri = request.getRequestURI();
 		String sentId = uri.substring(Constants.ID_LOCATION);
+		boolean validated = Validator.checkForNumeral(sentId, context);
+		/*
 		Enumeration<String> headerNames = request.getHeaderNames();
       	String accumulator = "Headers\n";
      	while(headerNames.hasMoreElements()) {
@@ -41,14 +44,18 @@ public class AdServlet extends HttpServlet {
         	accumulator += "\t" + paramValue + "\n";
       	}
 		context.log(accumulator);
+		*/
 		context.log("Partner id " + sentId);
 		int partnerInteger = 0;
-		if (sentId != null)
+		if (validated){
 			partnerInteger = Integer.parseInt(sentId);
-		responseString = service.retrieveData(Integer.parseInt(sentId));
-		response.setContentType("application/json,charset=UTF-8");
+			responseString = service.retrieveData(Integer.parseInt(sentId));	
+			response.setContentType("application/json,charset=UTF-8");
+		} else {
+			responseString = Constants.NUMERIC;
+			response.setContentType("text/plain,charset=UTF-8");
+		}	
 		printWriter.write(responseString);
-		
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -65,6 +72,9 @@ public class AdServlet extends HttpServlet {
 			context.log(Constants.ADDED + result.getPartnerId());
 		else if (result.getResult().equals("problem"))
 			context.log(Constants.NOT_ADDED + result.getPartnerId());
+		else if (result.getResult().equals(Constants.NUMERIC))
+			context.log(Constants.NUMERIC + result.getPartnerId());
+	
 	}
 	
  }

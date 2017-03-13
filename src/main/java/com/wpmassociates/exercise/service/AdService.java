@@ -12,6 +12,7 @@ import javax.servlet.ServletContext;
 import com.wpmassociates.exercise.persistence.*;
 import com.wpmassociates.exercise.domain.*;
 import com.wpmassociates.exercise.constants.*;
+import com.wpmassociates.exercise.validation.*;
 
 import java.util.Date;
 import static java.lang.System.currentTimeMillis;
@@ -59,6 +60,7 @@ public class AdService {
 	
 	public PersistenceResult processData(BufferedReader reader) {
 		StringBuffer buffer = new StringBuffer();
+		String stringId = "";
 		String line = null;
 		try {
 			while ((line = reader.readLine()) != null)
@@ -70,7 +72,12 @@ public class AdService {
 		int partnerId = 0;
 		try {
 			JSONObject jsonObject = new JSONObject(jsonString);
-			partnerId = Integer.parseInt(jsonObject.getString("partner_id"));
+			stringId = jsonObject.getString("partner_id");
+			boolean validated = Validator.checkForNumeral(stringId, context);
+			if (!validated)
+				return new PersistenceResult(stringId, Constants.NUMERIC);
+			
+			partnerId = Integer.parseInt(stringId);
 			duration = Integer.parseInt(jsonObject.getString("duration"));
 			adContent = jsonObject.getString("ad_content");
 		} catch (JSONException exception) {}
@@ -78,12 +85,12 @@ public class AdService {
 		JSONMapStorageObject storageObject = new JSONMapStorageObject(new Date(), jsonString, partnerId, milliseconds,  adContent);	
 		
 		if (checkId(partnerId))
-			return new PersistenceResult(partnerId, "exists");
+			return new PersistenceResult(stringId, "exists");
 		else
 			if (persist.storeData(partnerId, storageObject))
-				return new PersistenceResult(partnerId, "added");
+				return new PersistenceResult(stringId, "added");
 			else 
-				return new PersistenceResult(partnerId, "problem");
+				return new PersistenceResult(stringId, "problem");
 	}
 		
 	private boolean checkId(int partnerId) {

@@ -9,4 +9,5 @@ public interface Constants {
 	final String ALREADY_EXISTS = "Partner already exists with id ";
 	final String ADDED = "Partner added with id ";
 	final String NOT_ADDED = "Partner not added with id ";
+	final String NUMERIC = "Partner id must be numeric ";
   }

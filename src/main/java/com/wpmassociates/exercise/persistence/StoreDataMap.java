@@ -1,7 +1,7 @@
 package com.wpmassociates.exercise.persistence;
 
 import java.util.Map;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 import javax.servlet.ServletContext;
@@ -16,7 +16,7 @@ public class StoreDataMap implements StoreData {
 	private static StoreDataMap storeDataMap;
 	
 	private StoreDataMap() {
-		storageMap = new HashMap<Integer, JSONMapStorageObject>();
+		storageMap = new ConcurrentHashMap<Integer, JSONMapStorageObject>();
 	}
 	
 	public static StoreDataMap getInstance(ServletContext thisContext) {

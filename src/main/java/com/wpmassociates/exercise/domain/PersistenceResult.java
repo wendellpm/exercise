@@ -2,20 +2,21 @@ package com.wpmassociates.exercise.domain;
 
 public class PersistenceResult { 
 
-	private int partnerId;
+	private String partnerId;
 	private String result;
 		
 	public PersistenceResult() {}
 	
-	public PersistenceResult(int id, String result) {
+	public PersistenceResult(String id, String result) {
 		this.partnerId = id;
 		this.result = result;
 	}
 	
-
-	public int getPartnerId() {return partnerId;}
 	
-	public void setPartnerId(int id) {
+
+	public String getPartnerId() {return partnerId;}
+	
+	public void setPartnerId(String id) {
 		this.partnerId = id;
 	}
 	
