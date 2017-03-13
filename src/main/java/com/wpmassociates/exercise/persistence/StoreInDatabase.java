@@ -22,12 +22,18 @@ public class StoreInDatabase implements StoreData {
 	private ResultSet resultSet = null;
 	private JSONMapStorageObject adObject = null;
 	private ServletContext context = null;
-
+	
 	public StoreInDatabase(ServletContext context, Properties properties) {
-		this.context = context;	
-		setProperties(properties);
+			this.context = context;	
+			setProperties(properties);
+		try {
+			Class.forName(properties.getProperty("driverName"));
+			connection = DriverManager.getConnection(properties.getProperty("mysqlUrl") + "/" + properties.getProperty("databaseName"), properties.getProperty("dbUsername"), properties.getProperty("dbPassword"));
+		} catch (SQLException | ClassNotFoundException exception) {
+			exception.getMessage();
+		}
 	}
-
+	
 	public void setProperties(Properties properties) {
 		this.properties = properties;
 	}
@@ -40,20 +46,12 @@ public class StoreInDatabase implements StoreData {
 			long entryTime = storageObject.getEntryTime().getTime();
 			timestamp = new Timestamp(entryTime);
             insertStatement = "insert into json(partner_id, json_string, entry_date) values(?, ?, ?)"; 
-            String driverName = properties.getProperty("driverName");
-			Class.forName(driverName);      
-            String dataBaseString = properties.getProperty("mysqlUrl");
-			dataBaseString += "/";
-			dataBaseString += properties.getProperty("databaseName");
-			String user = properties.getProperty("dbUsername");
-			String password = properties.getProperty("dbPassword");
-			connection = DriverManager.getConnection(dataBaseString, user, password);
             preparedStatement = connection.prepareStatement(insertStatement);
 			preparedStatement.setInt(1, partnerId);
             preparedStatement.setString(2, jsonString);
 			preparedStatement.setTimestamp(3, timestamp);	
 			added = preparedStatement.executeUpdate();
-        } catch (SQLException | ClassNotFoundException exception){
+        } catch (SQLException exception){
 			exception.getMessage();
 		} finally {                                                       
             if (preparedStatement != null) {
@@ -71,14 +69,6 @@ public class StoreInDatabase implements StoreData {
 		String jsonString = null;
 		context.log("Partner id in retrieveData() " + partnerId);
         try { 
-        	String driverName = properties.getProperty("driverName");
- 			Class.forName(driverName);  
-            String dataBaseString = properties.getProperty("mysqlUrl");
- 			dataBaseString += "/";
- 			dataBaseString += properties.getProperty("databaseName");
- 			String user = properties.getProperty("dbUsername");
- 			String password = properties.getProperty("dbPassword");
- 			connection = DriverManager.getConnection(dataBaseString, user, password);
          	queryStatement = "select json_string, entry_date from json where partner_id = ?";  
             preparedStatement = connection.prepareStatement(queryStatement);
 			preparedStatement.setInt(1, partnerId);
@@ -95,7 +85,7 @@ public class StoreInDatabase implements StoreData {
 			long duration = Long.valueOf(Integer.parseInt((String)jsonObject.get("duration"))) * Constants.DAYINMILLISECONDS;
 			String adContent = (String)jsonObject.get("ad_content");
 			adObject = new JSONMapStorageObject(new Date(entryTime), jsonString, partnerId, duration, adContent);
-        } catch (SQLException | JSONException | ClassNotFoundException exception){
+        } catch (SQLException | JSONException exception){
 			exception.getMessage();
 		} finally {                                                       
             if (preparedStatement != null) {
@@ -117,19 +107,11 @@ public class StoreInDatabase implements StoreData {
 		context.log("In checkForPartnerId " + partnerId);
 		try {
 			queryStatement = "select partner_id from json where partner_id = ?";
-			String driverName = properties.getProperty("driverName");
-			Class.forName(driverName);
-			String dataBaseString = properties.getProperty("mysqlUrl");
-			dataBaseString += "/";
-			dataBaseString += properties.getProperty("databaseName");
-			String user = properties.getProperty("dbUsername");
-			String password = properties.getProperty("dbPassword");
-			connection = DriverManager.getConnection(dataBaseString, user, password);
 			preparedStatement = connection.prepareStatement(queryStatement);
 			preparedStatement.setInt(1, partnerId);
 			resultSet = preparedStatement.executeQuery();
 			exists = (resultSet.first());
-		} catch (SQLException | ClassNotFoundException exception){
+		} catch (SQLException exception){
 			exception.getMessage();
 		} 
 		context.log("Exists is " + exists);
