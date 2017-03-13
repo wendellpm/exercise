@@ -33,7 +33,7 @@ public class AdServlet extends HttpServlet {
 		printWriter = response.getWriter();
 		String uri = request.getRequestURI();
 		String sentId = uri.substring(Constants.ID_LOCATION);
-		boolean validated = Validator.checkForNumeral(sentId, context);
+		boolean validated = Validator.checkForNumeric(sentId, context);
 		/*
 		Enumeration<String> headerNames = request.getHeaderNames();
       	String accumulator = "Headers\n";

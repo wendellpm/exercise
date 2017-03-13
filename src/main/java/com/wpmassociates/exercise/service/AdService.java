@@ -73,7 +73,7 @@ public class AdService {
 		try {
 			JSONObject jsonObject = new JSONObject(jsonString);
 			stringId = jsonObject.getString("partner_id");
-			boolean validated = Validator.checkForNumeral(stringId, context);
+			boolean validated = Validator.checkForNumeric(stringId, context);
 			if (!validated)
 				return new PersistenceResult(stringId, Constants.NUMERIC);
 			
