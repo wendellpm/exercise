@@ -32,8 +32,7 @@ public class JSONMapStorageObject {
 		this.duration = duration;
 	}
 	
-	public long getDuration() {	return duration;
-	}
+	public long getDuration() {return duration; }
 	
 	public void setJsonString(String string) {
 		this.jsonString = string;

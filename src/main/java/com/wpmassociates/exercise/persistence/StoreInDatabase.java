@@ -12,77 +12,98 @@ import com.wpmassociates.exercise.constants.*;
 
 public class StoreInDatabase implements StoreData { 
 
-	private Connection connection = null; 
-	private Properties properties = null;
-    private PreparedStatement preparedStatement = null;     
+	private Connection connection; 
+	private Properties properties;
+    private PreparedStatement preparedStatement;     
     private String insertStatement = null;
 	private String queryStatement = null;
-	private String testStatement = null;
+	private String deleteStatement = null;
 	private Timestamp timestamp = null;
 	private ResultSet resultSet = null;
 	private JSONMapStorageObject adObject = null;
 	private ServletContext context = null;
 
-	
-	public StoreInDatabase(ServletContext context) {
-		this.context = context;		
+	public StoreInDatabase(ServletContext context, Properties properties) {
+		this.context = context;	
+		setProperties(properties);
 	}
 
 	public void setProperties(Properties properties) {
 		this.properties = properties;
 	}
 	
-	private Properties getProperties() {
-		return this.properties;
-	}
-	
-	private void setConnection(Connection connection) {
-		this.connection = getConnection();
-	}
-	
-	
-	private Connection getConnection() {
-		try {
-			properties = this.getProperties();
-			if (properties == null)
-				context.log("Properties null");
-			else 
-				context.log("Properties not null");
-			connection = DriverManager.getConnection(properties.getProperty("mysqlUrl") + "/" + properties.getProperty("databaseName"), properties.getProperty("dbUsername"), properties.getProperty("dbPassword"));
-		} catch (SQLException exception) {}
-		return connection;
-		}
-	
 	public boolean storeData(int partnerId, JSONMapStorageObject storageObject) {
-		boolean added = false;
+        context.log("In storeData method " + partnerId + " " + storageObject.toString());
+		int added = 0;
         try { 
 			String jsonString = storageObject.getJsonString();
 			long entryTime = storageObject.getEntryTime().getTime();
 			timestamp = new Timestamp(entryTime);
             insertStatement = "insert into json(partner_id, json_string, entry_date) values(?, ?, ?)"; 
-            preparedStatement = getConnection().prepareStatement(insertStatement);
+            String driverName = properties.getProperty("driverName");
+			Class.forName(driverName);      
+            String dataBaseString = properties.getProperty("mysqlUrl");
+			dataBaseString += "/";
+			dataBaseString += properties.getProperty("databaseName");
+			String user = properties.getProperty("dbUsername");
+			String password = properties.getProperty("dbPassword");
+			connection = DriverManager.getConnection(dataBaseString, user, password);
+            preparedStatement = connection.prepareStatement(insertStatement);
 			preparedStatement.setInt(1, partnerId);
             preparedStatement.setString(2, jsonString);
-			preparedStatement.setTimestamp(3, timestamp);
-			return preparedStatement.execute();
-        } catch (Exception exception){
+			preparedStatement.setTimestamp(3, timestamp);	
+			added = preparedStatement.executeUpdate();
+        } catch (SQLException | ClassNotFoundException exception){
 			exception.getMessage();
-        }
-		return false;
+		} finally {                                                       
+            if (preparedStatement != null) {
+				try {
+					preparedStatement.close();                      
+				} catch (SQLException exception) {}
+			}                                                        
+                                             
+        } 
+        context.log("Before return added " + added);
+		return (added == 1);
 	}	
 		
 	public JSONMapStorageObject retrieveData(int partnerId) {
 		String jsonString = null;
 		context.log("Partner id in retrieveData() " + partnerId);
         try { 
-			jsonString = "{\"partner_id\":\"10\", \"duration\":\"1\";\"ad_content\":\"This is the ad content\"}";
+        	String driverName = properties.getProperty("driverName");
+ 			Class.forName(driverName);  
+            String dataBaseString = properties.getProperty("mysqlUrl");
+ 			dataBaseString += "/";
+ 			dataBaseString += properties.getProperty("databaseName");
+ 			String user = properties.getProperty("dbUsername");
+ 			String password = properties.getProperty("dbPassword");
+ 			connection = DriverManager.getConnection(dataBaseString, user, password);
+         	queryStatement = "select json_string, entry_date from json where partner_id = ?";  
+            preparedStatement = connection.prepareStatement(queryStatement);
+			preparedStatement.setInt(1, partnerId);
+			resultSet = preparedStatement.executeQuery();
+			if (resultSet == null)
+				throw new SQLException("ResultSet null");
+			resultSet.first();
+			jsonString = resultSet.getString("json_string");
+			timestamp = resultSet.getTimestamp("entry_date");
+			if (jsonString == null || timestamp == null)
+				throw new SQLException("Null values returned");
+			long entryTime = timestamp.getTime();
 			JSONObject jsonObject = new JSONObject(jsonString);
-			long duration = Constants.DAYINMILLISECONDS;
-			String adContent = "This is the ad content";
-			adObject = new JSONMapStorageObject(new Date(), jsonString, partnerId, duration, adContent);
-        } catch (JSONException exception){
-				exception.getMessage();
-        }
+			long duration = Long.valueOf(Integer.parseInt((String)jsonObject.get("duration"))) * Constants.DAYINMILLISECONDS;
+			String adContent = (String)jsonObject.get("ad_content");
+			adObject = new JSONMapStorageObject(new Date(entryTime), jsonString, partnerId, duration, adContent);
+        } catch (SQLException | JSONException | ClassNotFoundException exception){
+			exception.getMessage();
+		} finally {                                                       
+            if (preparedStatement != null) {
+				try {
+					preparedStatement.close();                      
+				} catch (SQLException exception) {}
+			}                                          
+        } 
 		return adObject;
 	}		
 
@@ -92,25 +113,26 @@ public class StoreInDatabase implements StoreData {
 	}
 	
 	public boolean checkForPartnerId(int partnerId) {
-		int exists = 1;
+		boolean exists = false;
 		context.log("In checkForPartnerId " + partnerId);
-		
 		try {
-			connection = DriverManager.getConnection(properties.getProperty("mysqlUrl") + "/" + properties.getProperty("databaseName"), properties.getProperty("dbUsername"), properties.getProperty("dbPassword"));
-			if (connection == null)
-				context.log("connection value null in checkForPartnerId()");
-			testStatement = "select partner_id from json where partner_id = ?";
-			preparedStatement = getConnection().prepareStatement(testStatement);
-        if (preparedStatement == null)
-			context.log("preparedStatement null in checkForPartnerId()");
-        preparedStatement.setInt(1, partnerId);
-		exists = preparedStatement.executeUpdate();
-		context.log("Exists is " + exists);
-		} catch (Exception exception){
+			queryStatement = "select partner_id from json where partner_id = ?";
+			String driverName = properties.getProperty("driverName");
+			Class.forName(driverName);
+			String dataBaseString = properties.getProperty("mysqlUrl");
+			dataBaseString += "/";
+			dataBaseString += properties.getProperty("databaseName");
+			String user = properties.getProperty("dbUsername");
+			String password = properties.getProperty("dbPassword");
+			connection = DriverManager.getConnection(dataBaseString, user, password);
+			preparedStatement = connection.prepareStatement(queryStatement);
+			preparedStatement.setInt(1, partnerId);
+			resultSet = preparedStatement.executeQuery();
+			exists = (resultSet.first());
+		} catch (SQLException | ClassNotFoundException exception){
 			exception.getMessage();
 		} 
-	   	return true;
+		context.log("Exists is " + exists);
+	   	return exists;
 	}
-	
-	
  }

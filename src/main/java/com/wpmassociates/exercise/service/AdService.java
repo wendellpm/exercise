@@ -35,26 +35,21 @@ public class AdService {
 		String useMap = properties.getProperty("useMap");
 		if (useMap.equals("yes"))
 			persist = StoreDataMap.getInstance(context);
-		else 
-			persist = new StoreInDatabase(context);
+		else
+			persist = new StoreInDatabase(context, properties);
 	}	
 	
 	public String retrieveData(int partnerId) {
-		persist.setProperties(properties);
 		JSONMapStorageObject adObject = null;
-		context.log("Partner id is " + partnerId);;
 		boolean exists = checkId(partnerId);
 		this.context.log("Partner id exists " + exists);
 		if (!exists)
 			return Constants.NO_RECORD + " " + partnerId;
-		
 		adObject = persist.retrieveData(partnerId);
 		if (adObject == null)
 			return "Add object is null";
-		
 		Date date = adObject.getEntryTime();
 		long duration = adObject.getDuration();
-		
 		if (currentTimeMillis() > date.getTime() + duration)
 			return Constants.EXCEEDS;
 		else 
@@ -63,7 +58,6 @@ public class AdService {
 	}
 	
 	public PersistenceResult processData(BufferedReader reader) {
-		persist.setProperties(properties);
 		StringBuffer buffer = new StringBuffer();
 		String line = null;
 		try {
@@ -93,7 +87,6 @@ public class AdService {
 	}
 		
 	private boolean checkId(int partnerId) {
-		persist.setProperties(properties);
 		return persist.checkForPartnerId(partnerId);
 	}
  }
