@@ -30,11 +30,14 @@ public class AdServlet extends HttpServlet {
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		service = new AdService(context);
+		String sentId = (String)request.getAttribute("partnerId");
+		boolean validated = (Boolean)request.getAttribute("isValidated");
+		context.log("doGet id is " + sentId);
 		printWriter = response.getWriter();
+		/*
 		String uri = request.getRequestURI();
 		String sentId = uri.substring(Constants.ID_LOCATION);
 		boolean validated = Validator.checkForNumeric(sentId, context);
-		/*
 		Enumeration<String> headerNames = request.getHeaderNames();
       	String accumulator = "Headers\n";
      	while(headerNames.hasMoreElements()) {
@@ -45,7 +48,6 @@ public class AdServlet extends HttpServlet {
       	}
 		context.log(accumulator);
 		*/
-		context.log("Partner id " + sentId);
 		int partnerInteger = 0;
 		if (validated){
 			partnerInteger = Integer.parseInt(sentId);

@@ -4,6 +4,28 @@
  <description>Manages advertising content for advertising partners. Partners are identified by an integer. Data are stored for the partner includes date of start of ad campaign, duration in days of campaign and the content for the ad campaign.</description>
  <display-name>Advertising content application</display-name>
 
+<filter>
+   <filter-name>Get Filter</filter-name>
+   <filter-class>com.wpmassociates.exercise.filters.GetFilter</filter-class>
+	<init-param />
+</filter>
+
+<filter>
+   <filter-name>Next Filter</filter-name>
+   <filter-class>com.wpmassociates.exercise.filters.NextFilter</filter-class>
+   <init-param />
+</filter>
+
+ <filter-mapping>
+   <filter-name>Get Filter</filter-name>
+   <servlet-name>adservlet</servlet-name>
+</filter-mapping>
+
+<filter-mapping>
+   <filter-name>Next Filter</filter-name>
+   <servlet-name>adservlet</servlet-name>
+</filter-mapping>
+ 
  <servlet>
   <servlet-name>adservlet</servlet-name>
   <servlet-class>com.wpmassociates.exercise.servlets.AdServlet</servlet-class>
