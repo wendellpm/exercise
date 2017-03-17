@@ -5,20 +5,18 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.Scanner;
 import java.util.logging.Logger;
-
-
 import java.io.IOException;
-
-
 import static java.lang.System.in;
 import static java.lang.System.out;
+
+import com.wpmassociates.exercise.constants.Constants;
 
 public class HttpClientRequestCommandLine {
 	
 	private static Logger logger = Logger.getLogger(HttpClientRequestCommandLine.class.getName());
 	
 	public static void main(String...inputs) {
-		String[] keys = {"duration", "partner_id", "ad_content"};
+		String[] keys = {Constants.DURATION, Constants.PARTNERID, Constants.ADCONTENT};
 		Scanner scanner = null;
 		String partnerId = null;
 		String duration = null;

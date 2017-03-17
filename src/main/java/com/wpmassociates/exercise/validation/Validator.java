@@ -5,10 +5,8 @@ import java.util.regex.Pattern;
 import javax.servlet.ServletContext;
 
 public class Validator{
-
 	
-	public static boolean checkForNumeric(String input, ServletContext context) {
-		
+	public static boolean checkForNumeric(String input, ServletContext context) {	
 		context.log("Input is " + input);
 		Pattern pattern = Pattern.compile("\\d+");
 		Matcher matcher = pattern.matcher(input);

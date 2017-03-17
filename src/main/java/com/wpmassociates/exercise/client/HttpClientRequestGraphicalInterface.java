@@ -12,8 +12,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import com.google.gson.GsonBuilder;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.EventQueue;
@@ -21,6 +19,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Logger;
+
+import com.wpmassociates.exercise.constants.Constants;
 
 public class HttpClientRequestGraphicalInterface extends JFrame {
 	
@@ -78,9 +78,9 @@ public class HttpClientRequestGraphicalInterface extends JFrame {
 				partnerId = idField.getText();
 				duration = durationField.getText();
 				adContent = adContentArea.getText();
-				partnerAd.put("partner_id", partnerId);
-				partnerAd.put("duration", duration);
-				partnerAd.put("ad_content", adContent);
+				partnerAd.put(Constants.PARTNERID, partnerId);
+				partnerAd.put(Constants.DURATION, duration);
+				partnerAd.put(Constants.ADCONTENT, adContent);
 				Set<String> keySet = partnerAd.keySet();
 				for (String key : keySet) 
 					logger.info("Key " + key + " value " + partnerAd.get(key));

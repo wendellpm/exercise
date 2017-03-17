@@ -10,4 +10,7 @@ public interface Constants {
 	final String ADDED = "Partner added with id ";
 	final String NOT_ADDED = "Partner not added with id ";
 	final String NUMERIC = "Partner id must be numeric ";
+	final String PARTNERID = "partner_id";
+	final String DURATION = "duration";
+	final String ADCONTENT = "ad_content";
   }

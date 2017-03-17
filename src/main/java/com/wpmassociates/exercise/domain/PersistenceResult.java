@@ -12,8 +12,6 @@ public class PersistenceResult {
 		this.result = result;
 	}
 	
-	
-
 	public String getPartnerId() {return partnerId;}
 	
 	public void setPartnerId(String id) {
