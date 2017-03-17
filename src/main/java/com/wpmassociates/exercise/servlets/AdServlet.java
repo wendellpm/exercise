@@ -34,10 +34,7 @@ public class AdServlet extends HttpServlet {
 		boolean validated = (Boolean)request.getAttribute("isValidated");
 		context.log("doGet id is " + sentId);
 		printWriter = response.getWriter();
-		/*
-		String uri = request.getRequestURI();
-		String sentId = uri.substring(Constants.ID_LOCATION);
-		boolean validated = Validator.checkForNumeric(sentId, context);
+
 		Enumeration<String> headerNames = request.getHeaderNames();
       	String accumulator = "Headers\n";
      	while(headerNames.hasMoreElements()) {
@@ -47,8 +44,9 @@ public class AdServlet extends HttpServlet {
         	accumulator += "\t" + paramValue + "\n";
       	}
 		context.log(accumulator);
-		*/
+
 		int partnerInteger = 0;
+		
 		if (validated){
 			partnerInteger = Integer.parseInt(sentId);
 			responseString = service.retrieveData(Integer.parseInt(sentId));	

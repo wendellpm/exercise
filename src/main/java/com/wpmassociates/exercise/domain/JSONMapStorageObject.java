@@ -53,7 +53,7 @@ public class JSONMapStorageObject {
 	}
 
 	public String toString() {
-		return "Id " + getPartnerId() + "\njson string " + getJsonString() + "\nad content " + getAdContent() + "\nduration milleseconds " + getDuration() + " or days " + (getDuration()/Constants.DAYINMILLISECONDS) + "\nentry time milliseconds " + getEntryTime().getTime() + " or date " + getEntryTime();
+		return "Id " + getPartnerId() + "\njson string " + getJsonString() + "\nad content " + getAdContent() + "\nduration milliseconds " + getDuration() + " or days " + (getDuration()/Constants.DAYINMILLISECONDS) + "\nentry time milliseconds " + getEntryTime().getTime() + " or date " + getEntryTime();
 	}	
 	
  }

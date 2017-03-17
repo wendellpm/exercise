@@ -14,13 +14,13 @@
       <name>org.jboss.tools.jst.web.kb.kbbuilder</name>
     </buildCommand>
     <buildCommand>
-      <name>org.eclipse.m2e.core.maven2Builder</name>
-    </buildCommand>
-    <buildCommand>
       <name>org.jboss.tools.cdi.core.cdibuilder</name>
     </buildCommand>
     <buildCommand>
       <name>org.eclipse.wst.validation.validationbuilder</name>
+    </buildCommand>
+    <buildCommand>
+      <name>org.eclipse.m2e.core.maven2Builder</name>
     </buildCommand>
   </buildSpec>
   <natures>

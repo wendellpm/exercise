@@ -7,10 +7,14 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 import java.util.Properties;
 
+import java.util.logging.Logger;
+
 import com.wpmassociates.exercise.domain.*;
 
 public class StoreDataMap implements StoreData { 
 
+	private static Logger logger = Logger.getLogger(StoreDataMap.class.getName());
+	
 	private static Map<Integer, JSONMapStorageObject> storageMap;
 	private static ServletContext context = null;
 	private static StoreDataMap storeDataMap;
@@ -22,14 +26,16 @@ public class StoreDataMap implements StoreData {
 	public static StoreDataMap getInstance(ServletContext thisContext) {
 		if (storeDataMap == null) {
 			context = thisContext;
-			context.log("Map is empty");
+			context.log("Map is empty, create new Map object");
 			storeDataMap = new StoreDataMap();
 		} else {
+			context.log("Map already exists");
 			Set<Map.Entry<Integer, JSONMapStorageObject>> set = storageMap.entrySet();
 			for (Map.Entry<Integer, JSONMapStorageObject> entry : set) {
 				int key = entry.getKey();
 				JSONMapStorageObject object = entry.getValue();
 				context.log("Key " + key + " value " + object.toString());
+				logger.info("Key " + key + " value " + object.toString());
 			}
 		}
 		return storeDataMap;
@@ -61,6 +67,6 @@ public class StoreDataMap implements StoreData {
 	}
 	
 	public void setProperties(Properties properties)
-	{}
+	{logger.info("No properties to set here, but needed for interface");}
 	
  }
