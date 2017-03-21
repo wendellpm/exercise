@@ -12,6 +12,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import java.io.PrintWriter;
 
 import com.wpmassociates.exercise.constants.*;
 import com.wpmassociates.exercise.validation.*;
@@ -19,13 +20,15 @@ import com.wpmassociates.exercise.validation.*;
 public class GetFilter implements Filter {
 
 	private ServletContext context;
-	
+	private PrintWriter printWriter;
+		
 	public void init(FilterConfig filterConfiguration) throws ServletException {
 		context = filterConfiguration.getServletContext();
 		context.log(getClass().getName() + "initialized");
 	}
 	
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+		printWriter = response.getWriter();
 		HttpServletRequest httpRequest = (HttpServletRequest)request;
 		String method = httpRequest.getMethod();
 		context.log("Method " + method);
@@ -34,14 +37,22 @@ public class GetFilter implements Filter {
 			context.log("Requested resource "  +  uri);
 			String sentId = uri.substring(Constants.ID_LOCATION);
 			boolean validated = Validator.checkForNumeric(sentId, context);
-			context.log("Partner id " + sentId + " validated " + validated);
+
 			HttpServletRequestWrapper requestWrapper = new HttpServletRequestWrapper(httpRequest);
 			requestWrapper.setAttribute("isValidated", validated);
-			if (validated)
+			if (validated) {
+				context.log("Partner id " + sentId + " validated " + validated);
 				requestWrapper.setAttribute("partnerId", sentId);
-			chain.doFilter(requestWrapper, response);
+				chain.doFilter(requestWrapper, response);
+			} else {
+				String responseString = Constants.NUMERIC;
+				response.setContentType("text/plain,charset=UTF-8");
+				printWriter.write(responseString);
+			}
+		} else {
+			chain.doFilter(request, response);
 		}
-		chain.doFilter(request, response);
+
 	}
 	
 	public void destroy() {

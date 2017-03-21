@@ -83,7 +83,7 @@ public class AdService {
 		} catch (JSONException exception) {}
 		long milliseconds = duration * Constants.DAYINMILLISECONDS;
 		JSONMapStorageObject storageObject = new JSONMapStorageObject(new Date(), jsonString, partnerId, milliseconds,  adContent);	
-		
+		context.log("json storage object " + storageObject.toString());
 		if (checkId(partnerId))
 			return new PersistenceResult(stringId, "exists");
 		else

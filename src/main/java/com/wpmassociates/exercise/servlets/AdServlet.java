@@ -3,6 +3,7 @@ package com.wpmassociates.exercise.servlets;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServlet;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
@@ -31,30 +32,12 @@ public class AdServlet extends HttpServlet {
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		service = new AdService(context);
 		String sentId = (String)request.getAttribute("partnerId");
-		boolean validated = (Boolean)request.getAttribute("isValidated");
 		context.log("doGet id is " + sentId);
 		printWriter = response.getWriter();
-
-		Enumeration<String> headerNames = request.getHeaderNames();
-      	String accumulator = "Headers\n";
-     	while(headerNames.hasMoreElements()) {
-       	  	String paramName = headerNames.nextElement();
-        	accumulator += "\t" + paramName + "\t";
-        	String paramValue = request.getHeader(paramName);
-        	accumulator += "\t" + paramValue + "\n";
-      	}
-		context.log(accumulator);
-
 		int partnerInteger = 0;
-		
-		if (validated){
-			partnerInteger = Integer.parseInt(sentId);
-			responseString = service.retrieveData(Integer.parseInt(sentId));	
-			response.setContentType("application/json,charset=UTF-8");
-		} else {
-			responseString = Constants.NUMERIC;
-			response.setContentType("text/plain,charset=UTF-8");
-		}	
+		partnerInteger = Integer.parseInt(sentId);
+		responseString = service.retrieveData(Integer.parseInt(sentId));	
+		response.setContentType("application/json,charset=UTF-8");
 		printWriter.write(responseString);
 	}
 	
@@ -65,6 +48,7 @@ public class AdServlet extends HttpServlet {
 		printWriter = response.getWriter();
 		BufferedReader reader = request.getReader();
 		response.setContentType("text/plain,charset=UTF-8");
+		context.log("in doPost()");
 		result = service.processData(reader);
 		if (result.getResult().equals("exists")) 
 			context.log(Constants.ALREADY_EXISTS + result.getPartnerId());

@@ -31,18 +31,25 @@ public class StoreDataMap implements StoreData {
 		} else {
 			context.log("Map already exists");
 			Set<Map.Entry<Integer, JSONMapStorageObject>> set = storageMap.entrySet();
+			if (set != null) {
+			context.log("Entries in current map");
 			for (Map.Entry<Integer, JSONMapStorageObject> entry : set) {
 				int key = entry.getKey();
 				JSONMapStorageObject object = entry.getValue();
 				context.log("Key " + key + " value " + object.toString());
 				logger.info("Key " + key + " value " + object.toString());
 			}
+			} else {
+				context.log("No entries in map");
+			}
+			
 		}
 		return storeDataMap;
 	}
 	
 
 	public boolean storeData(int partnerId, JSONMapStorageObject storageObject) {
+		context.log("Partner id " + partnerId + " object " + storageObject.toString());
 		storageMap.put(partnerId, storageObject);
 		JSONMapStorageObject object = storageMap.get(partnerId);
 		context.log("Data stored " + object.getPartnerId());

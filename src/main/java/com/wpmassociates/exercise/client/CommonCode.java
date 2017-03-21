@@ -72,7 +72,7 @@ public class CommonCode {
 			}
 		} catch (IOException exception) {}
 		StatusLine statusLine = response.getStatusLine();
-		return result.toString() + " code " + statusLine.getStatusCode() + " " + statusLine.getReasonPhrase();
+		return result.toString() + "code " + statusLine.getStatusCode() + " " + statusLine.getReasonPhrase();
 	}
 
 	public static Comparator<String> getComparator() {
