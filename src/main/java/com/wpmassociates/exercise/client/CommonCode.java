@@ -21,7 +21,7 @@ import java.util.Map;
  
 public class CommonCode {
 	
- 		private static String URL = "http://localhost:8080/ad";
+ 	private static String URL = "http://localhost:8080/ad";
 		
 	public static String makePostRequest(Map<String, String> partnerAd) {
 		try {
@@ -44,9 +44,9 @@ public class CommonCode {
 		return null;
 	}
 
-	public static String makeGetRequest(String URL) {
+	public static String makeGetRequest(String partnerId) {
 		try {
-			HttpGet httpGet = new HttpGet(URL);
+			HttpGet httpGet = new HttpGet(URL + "/" + partnerId);
 			httpGet.setHeader("Accept", "text/plain");
 			httpGet.setHeader("Content-type", "text/plain");
 			HttpResponse httpResponse = new DefaultHttpClient().execute(httpGet);

@@ -1,0 +1,5 @@
+<service>
+	<url>${mysqlUrl}</url>
+	<user>${dbUsername}</user>
+	<password>${dbPassword}</password>
+</service>

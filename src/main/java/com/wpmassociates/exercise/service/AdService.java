@@ -2,11 +2,13 @@ package com.wpmassociates.exercise.service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+
 import org.json.JSONObject;
 import org.json.JSONException;
 
 import java.util.Properties;
 import java.io.InputStream;
+
 import javax.servlet.ServletContext;
 
 import com.wpmassociates.exercise.persistence.*;
@@ -15,6 +17,7 @@ import com.wpmassociates.exercise.constants.*;
 import com.wpmassociates.exercise.validation.*;
 
 import java.util.Date;
+
 import static java.lang.System.currentTimeMillis;
 
 public class AdService {
@@ -25,6 +28,7 @@ public class AdService {
 	private ServletContext context = null;
 
 	public AdService(ServletContext context) {
+		String useMap = null;
 		this.context = context;
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		InputStream input = classLoader.getResourceAsStream("default.properties");
@@ -32,8 +36,7 @@ public class AdService {
 		try {
 			properties.load(input);
 		} catch (IOException exception) {}
-		
-		String useMap = properties.getProperty("useMap");
+		useMap = properties.getProperty("useMap");
 		if (useMap.equals("yes"))
 			persist = StoreDataMap.getInstance(context);
 		else
